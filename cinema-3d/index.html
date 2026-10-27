@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CINEMA 3D — Premium Interaktiv Kinoteatr</title>
+    <meta name="description" content="Haqiqiy 3D kinoteatr zali: immersiv tajriba, joy tanlash va video tomosha qilish." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- 0. YUKLASH OYNASI (LOADING SCREEN) -->
+    <div id="loading" class="loading-screen" role="status" aria-live="polite">
+      <div class="loading-content">
+        <div class="loading-logo">
+          <span class="gold-text">CINEMA</span> 3D
+        </div>
+        <div class="loading-sub">LUMIERE GRAND AUDITORIUM</div>
+        <div class="loading-bar">
+          <div class="loading-progress" id="loadProgress"></div>
+        </div>
+        <p class="loading-text" id="loadStatus">Zal tayyorlanmoqda...</p>
+      </div>
+    </div>
+
+    <!-- 1. YUQORI PANEL (HEADER / TOPBAR) -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo">
+          <span class="gold-text">CINEMA</span><span>3D</span>
+          <span class="logo-sub">GRAND CINEMA</span>
+        </div>
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span>PREMIUM AUDITORIUM</span>
+        </div>
+        <button id="facingToggleBtn" class="topbar-pill-btn" title="Ko‘rinishni 180° ga aylantirish">
+          <span class="icon">🔄</span>
+          <span id="facingToggleText">Zalga qarash</span>
+        </button>
+      </div>
+
+      <div class="topbar-center">
+        <span class="topbar-tagline">Bitta zal. Har bir burchak.</span>
+      </div>
+
+      <div class="topbar-right">
+        <button id="tourBtn" class="topbar-icon-btn" title="Zal bo‘ylab avtomatik sayohat">
+          <span class="icon">🎬</span>
+          <span class="btn-label">Sayohat</span>
+        </button>
+        <button id="soundToggleBtn" class="topbar-icon-btn" title="Kinoteatr ovozini yoqish / o‘chirish">
+          <span class="icon" id="soundIcon">🔇</span>
+          <span class="btn-label" id="soundLabel">Ovoz</span>
+        </button>
+        <button id="fullscreenBtn" class="topbar-icon-btn" title="To‘liq ekran rejimi">
+          <span class="icon">⛶</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. ASOSIY 3D SAHNA KONTEYNERI -->
+    <main id="scene-container">
+      <div id="scene"></div>
+    </main>
+
+    <!-- 3. HERO MATN VA BRON BO‘LIMI (UZBEK HERO OVERLAY) -->
+    <aside class="hero-overlay" id="heroOverlay">
+      <div class="hero-eyebrow">
+        <span>01 / AUDITORIUM</span>
+        <div class="time-badge">
+          <span class="time-dot"></span>
+          <span id="currentShowtimeBadge">13:00</span>
+        </div>
+      </div>
+      <h1 class="hero-title">
+        His et.<br />
+        <span>Tomosha qil.</span>
+      </h1>
+      <p class="hero-desc">
+        Kinoning yangi o‘lchamiga xush kelibsiz. Eng so‘nggi lazer proyeksiyasi va immersiv audio tizimi bilan jihozlangan premium kinoteatr.
+      </p>
+      <div class="hero-meta">
+        <span class="meta-tag">IMAX LASER</span>
+        <span class="meta-tag">DOLBY ATMOS 64</span>
+        <span class="meta-tag">LUXURY RECLINER</span>
+      </div>
+      <button id="hideHeroBtn" class="hero-toggle-btn" title="Hero matnini yashirish/ko‘rsatish">
+        <span>Matnni yashirish</span> ▾
+      </button>
+    </aside>
+
+    <!-- 4. KAMERA MASOFASI VA BALANDLIGI HUD -->
+    <div class="camera-hud" id="cameraHud">
+      <span class="hud-icon">📐</span>
+      <span id="hudDistance">Ekrangacha masofa: 22.0 m</span>
+      <span class="hud-divider">•</span>
+      <span id="hudHeight">Balandlik: 3.2 m</span>
+    </div>
+
+    <!-- 5. EKRAN VIDEO BOSHQARUVI (CINEMA SCREEN CONTROLS) -->
+    <div class="video-bar" id="videoBar">
+      <button id="playPauseBtn" class="video-btn" title="Ijro / Pauza">
+        <span id="playIcon">⏸</span>
+      </button>
+      <div class="video-timeline">
+        <div class="video-progress" id="videoProgress"></div>
+      </div>
+      <span class="video-time" id="videoTime">01:24 / 02:45</span>
+      <label class="video-upload-label" title="O‘zingizning MP4 videongizni kinoteatr ekraniga yuklang">
+        <span>📁 Video yuklash</span>
+        <input type="file" id="videoFileInput" accept="video/mp4,video/webm" style="display: none;" />
+      </label>
+    </div>
+
+    <!-- 6. PASTKI FILM TANLASH KARUSELI (3 TA KINO) -->
+    <nav class="movie-carousel" aria-label="Ekrandagi filmni tanlash">
+      <div class="carousel-heading">
+        <span class="pulse-dot"></span>
+        <span>EKRANDAGI FILM (3 TA KINO):</span>
+      </div>
+      <div class="carousel-track">
+        <button class="movie-card active" data-movie="lastlight" title="THE LAST LIGHT filmini ekranda qo‘yish">
+          <div class="card-thumb thumb-lastlight">
+            <span class="card-play-icon">▶</span>
+          </div>
+          <div class="card-info">
+            <div class="active-badge">NAMOYISHDA</div>
+            <span class="movie-name">1. THE LAST LIGHT</span>
+            <span class="movie-genre">Sci-Fi • Kosmik Drama</span>
+          </div>
+        </button>
+
+        <button class="movie-card" data-movie="sintel" title="SINTEL filmini ekranda qo‘yish">
+          <div class="card-thumb thumb-sintel">
+            <span class="card-play-icon">▶</span>
+          </div>
+          <div class="card-info">
+            <span class="movie-name">2. SINTEL</span>
+            <span class="movie-genre">Drama • Fantastika</span>
+          </div>
+        </button>
+
+        <button class="movie-card" data-movie="quieter" title="A QUIETER WORLD filmini ekranda qo‘yish">
+          <div class="card-thumb thumb-quieter">
+            <span class="card-play-icon">▶</span>
+          </div>
+          <div class="card-info">
+            <span class="movie-name">3. A QUIETER WORLD</span>
+            <span class="movie-genre">Kosmos • Hujjatli</span>
+          </div>
+        </button>
+      </div>
+    </nav>
+
+    <!-- EKRAN XABARNOMASI (MOVIE SWITCH TOAST) -->
+    <div id="movieToast" class="movie-toast">🎬 Ekranda: THE LAST LIGHT</div>
+
+    <!-- 7. PASTKI KAMERA BOSHQARUVI TUGMALARI (CAMERA VIEW CONTROLS) -->
+    <div class="controls-wrapper">
+      <div class="mouse-hint">
+        <span>↔ Sichqoncha — zalni aylantirish • ↕ G‘ildirak — yaqinlashtirish • O‘rindiqni bosib tanlang</span>
+      </div>
+
+      <div class="view-buttons" role="group" aria-label="Kamera ko‘rinishlari">
+        <button class="view-btn" data-view="screen">Ekran oldi</button>
+        <button class="view-btn active" data-view="center">Zal markazi</button>
+        <button class="view-btn" data-view="facingSeats">Zal tomonga ↷</button>
+        <button class="view-btn" data-view="back">Orqa qator</button>
+        <button class="view-btn" data-view="frontLeft">↙ Old chap</button>
+        <button class="view-btn" data-view="frontRight">↘ Old o‘ng</button>
+        <button class="view-btn" data-view="backLeft">↖ Orqa chap</button>
+        <button class="view-btn" data-view="backRight">↗ Orqa o‘ng</button>
+        <button id="resetCameraBtn" class="view-btn reset-btn" title="Kamerani boshlang‘ich holatga qaytarish">
+          Kamerani tiklash ↺
+        </button>
+      </div>
+    </div>
+
+    <!-- 8. FOV (KO‘RISH BURCHAGI) SLIDER -->
+    <div class="fov-control" title="Kamera ko‘rish burchagi (FOV)">
+      <label for="fovSlider">FOV <span id="fovValue">55°</span></label>
+      <input type="range" id="fovSlider" min="35" max="80" value="55" step="1" />
+    </div>
+
+    <!-- 9. O‘NG TOMONDAGI BRON VA CHIPTA PANELI (BOOKING SIDEBAR) -->
+    <aside class="booking-sidebar" id="bookingSidebar">
+      <div class="sidebar-header">
+        <div class="movie-details">
+          <span class="sidebar-tag" id="sidebarGenre">Sci-Fi • Drama</span>
+          <h2 class="sidebar-title" id="sidebarMovieTitle">THE LAST LIGHT</h2>
+          <p class="sidebar-subtitle">Davomiyligi: 2 soat 18 daqiqa • IMAX Lazer</p>
+        </div>
+      </div>
+
+      <!-- Sana tanlash -->
+      <div class="sidebar-section">
+        <span class="section-label">01 — SANANI TANLANG</span>
+        <div class="date-tabs" role="tablist">
+          <button class="date-tab active" data-date="24-okt">
+            <span class="day-name">Bugun</span>
+            <span class="day-num">24-okt</span>
+          </button>
+          <button class="date-tab" data-date="25-okt">
+            <span class="day-name">Shanba</span>
+            <span class="day-num">25-okt</span>
+          </button>
+          <button class="date-tab" data-date="26-okt">
+            <span class="day-name">Yaksh</span>
+            <span class="day-num">26-okt</span>
+          </button>
+          <button class="date-tab" data-date="27-okt">
+            <span class="day-name">Dush</span>
+            <span class="day-num">27-okt</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seans vaqti -->
+      <div class="sidebar-section">
+        <span class="section-label">SEANS VAQTI</span>
+        <div class="time-pills">
+          <button class="time-pill active" data-time="13:00">13:00</button>
+          <button class="time-pill" data-time="16:15">16:15</button>
+          <button class="time-pill" data-time="19:00">19:00</button>
+          <button class="time-pill" data-time="22:00">22:00</button>
+        </div>
+      </div>
+
+      <!-- O‘rindiq tanlash -->
+      <div class="sidebar-section">
+        <div class="section-header-row">
+          <span class="section-label">02 — O‘RINDIQNI TANLANG</span>
+          <button id="openSeatMapBtn" class="text-link-btn" title="2D zal xaritasini ochish">
+            [::] Zal xaritasi
+          </button>
+        </div>
+        <p class="seat-instruction">
+          Zaldagi istalgan bo‘sh o‘rindiqni bosing yoki xaritadan foydalaning.
+        </p>
+
+        <!-- O‘rindiqlar tushuntirishi (Legend) -->
+        <div class="seat-legend">
+          <div class="legend-item">
+            <span class="legend-color available"></span>
+            <span>Bo‘sh</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color selected"></span>
+            <span>Tanlangan</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color reserved"></span>
+            <span>Band</span>
+          </div>
+        </div>
+
+        <!-- Tanlangan o‘rindiqdan ko‘rish tugmasi -->
+        <button id="viewFromSeatBtn" class="action-ghost-btn" disabled>
+          👁 Tanlangan o‘rindiqdan ko‘rish
+        </button>
+
+        <!-- Tanlangan joylar ro‘yxati -->
+        <div class="selected-seats-box">
+          <div class="selected-seats-header">
+            <span>Tanlangan o‘rindiqlar:</span>
+            <span id="selectedSeatsCount" class="gold-count">0 ta</span>
+          </div>
+          <div id="selectedSeatsList" class="seats-tags-list">
+            <span class="empty-hint">Hozircha o‘rindiq tanlanmagan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- To‘lov va Tasdiqlash -->
+      <div class="sidebar-footer">
+        <div class="price-row">
+          <div class="price-info">
+            <span class="price-label">Jami to‘lov:</span>
+            <span class="price-note">Chipta narxi: 180,000 so‘m</span>
+          </div>
+          <div class="price-amount" id="totalPriceDisplay">0 so‘m</div>
+        </div>
+
+        <button id="checkoutBtn" class="checkout-btn" disabled>
+          Joyni tasdiqlash
+        </button>
+
+        <p class="sidebar-footnote">
+          Qatorlar, seanslar va narxlar namuna uchun. Band qilishlar faqat ushbu brauzerda saqlanadi.
+        </p>
+      </div>
+    </aside>
+
+    <!-- 10. 2D O‘RINDIQLAR XARITASI MODAL OYNASI (MODERN DIALOG) -->
+    <dialog id="seatMapModal" class="cinema-dialog" closedby="any" aria-labelledby="seatMapTitle">
+      <div class="dialog-card">
+        <header class="dialog-header">
+          <div>
+            <span class="dialog-badge">XARITADAN TANLASH</span>
+            <h2 id="seatMapTitle" class="dialog-title">Sizning joyingiz, sizning nigohingiz</h2>
+            <p class="dialog-subtitle" id="seatMapMovieInfo">The Last Light • 24-oktabr • 13:00</p>
+          </div>
+          <button id="closeSeatMapBtn" class="close-dialog-btn" aria-label="Yopish">✕</button>
+        </header>
+
+        <!-- Ekranning egri chizig‘i -->
+        <div class="screen-arc-wrapper">
+          <div class="screen-arc"></div>
+          <span class="screen-arc-label">KATTA KINO EKRANI</span>
+        </div>
+
+        <!-- O‘rindiqlar katakchasi (2D Seat Grid) -->
+        <div class="grid-scroll-area">
+          <div class="seats-grid-container" id="seatsGridContainer">
+            <!-- JavaScript orqali generatsiya qilinadi -->
+          </div>
+        </div>
+
+        <!-- Legend & Footer -->
+        <div class="dialog-footer">
+          <div class="seat-legend">
+            <div class="legend-item">
+              <span class="legend-color available"></span>
+              <span>Bo‘sh (180,000 so‘m)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color selected"></span>
+              <span>Tanlangan</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color reserved"></span>
+              <span>Band</span>
+            </div>
+          </div>
+
+          <div class="dialog-actions">
+            <button id="confirmSeatMapBtn" class="dialog-primary-btn">
+              Joylarni tasdiqlash va zalga qaytish
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- 11. CHIPTA CHEKI / BRON TASDIQLASH MODALI -->
+    <dialog id="ticketModal" class="cinema-dialog" closedby="any" aria-labelledby="ticketTitle">
+      <div class="dialog-card ticket-card">
+        <header class="dialog-header">
+          <div>
+            <span class="dialog-badge gold-badge">MUVAFFAQIYATLI BAND QILINDI</span>
+            <h2 id="ticketTitle" class="dialog-title">Elektron Chipta</h2>
+            <p class="dialog-subtitle">Lumiere Grand Cinema — Zal 1</p>
+          </div>
+          <button id="closeTicketBtn" class="close-dialog-btn" aria-label="Yopish">✕</button>
+        </header>
+
+        <div class="ticket-body">
+          <div class="ticket-qr-section">
+            <div class="qr-placeholder" id="qrBox">
+              <div class="qr-pattern"></div>
+            </div>
+            <span class="ticket-code">KOD: #LM-948261</span>
+          </div>
+
+          <div class="ticket-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Film</span>
+              <span class="detail-val" id="ticketFilmName">THE LAST LIGHT</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Sana va Seans</span>
+              <span class="detail-val" id="ticketDateTime">24-okt, 13:00</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Zal</span>
+              <span class="detail-val">01 / Grand Auditorium</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Tanlangan joylar</span>
+              <span class="detail-val gold-val" id="ticketSeatsList">D-5, D-6</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Jami to‘lov</span>
+              <span class="detail-val gold-val" id="ticketTotal">360,000 so‘m</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Holat</span>
+              <span class="detail-val status-green">✓ To‘langan / Saqlangan</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-footer ticket-footer">
+          <button id="printTicketBtn" class="action-ghost-btn">Chop etish 🖨</button>
+          <button id="finishBookingBtn" class="dialog-primary-btn">Zalga qaytish</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- 12. O‘RINDIRQ POINT-OF-VIEW (POV) XABAR PANELI -->
+    <div class="seat-pov-banner" id="seatPovBanner">
+      <span class="pov-badge">👁 O‘RINDIRQ KO‘RINISHI</span>
+      <span class="pov-text" id="povSeatText">Siz D-5 o‘rindiqdasiz</span>
+      <button id="exitPovBtn" class="pov-exit-btn">Zal ko‘rinishiga qaytish ✕</button>
+    </div>
+
+    <!-- 13. O‘RINDIRQ HOVER QILINGANDA CHIQADIGAN 3D TOOLTIP -->
+    <div class="seat-3d-tooltip" id="seatTooltip" style="display: none;">
+      <span class="tooltip-seat-name" id="tooltipSeatName">Qator D • Joy 5</span>
+      <span class="tooltip-seat-price" id="tooltipSeatPrice">180,000 so‘m</span>
+      <span class="tooltip-seat-status" id="tooltipSeatStatus">Tanlash uchun bosing</span>
+    </div>
+
+    <!-- 14. Yashirin video elementlari -->
+    <video id="cinemaVideoElement" playsinline crossOrigin="anonymous" loop style="display: none;"></video>
+
+    <!-- THREE.JS IMPORT MAP -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
